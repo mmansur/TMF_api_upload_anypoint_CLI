@@ -9,8 +9,8 @@ split_camel_case() {
 # Define your Anypoint Platform login credentials and organization details
 username=""
 password=""
-organization="-a2ef-41ad-aeef-4b837a72ba43"
-host="anypoint.mulesoft.com"
+organization="0adae3f1-99ef-4049-b776-874174fc88d1"
+host="eu1.anypoint.mulesoft.com"
 
 
 # Log in to Anypoint Platform
@@ -43,6 +43,11 @@ do
                 # Extract the name from the filename
                 name="${file%-v*}"
 
+                # Generate a proper name for the sample
+                beautiful_name=$(split_camel_case "$name")
+                beautiful_name=$(echo "$beautiful_name" | sed 's/-/ - /')
+                echo "Beautiful name: $beautiful_name"
+
                 # Set the description
                 description="${file%-v*}"
 
@@ -63,8 +68,8 @@ do
                 echo "Publishing the API to the exchange"
                 echo "Publishing $name API: $file with version: $version and with assetIdentifier: $assetIdentifier"
                 
-                
-                anypoint-cli-v4 exchange:asset:upload --host $host --username $username --password $password --organization $organization --name "$name" --description "$full_detail" --tags "$tag" --type "rest-api"   --properties='{"apiVersion":"'"$version"'", "mainFile": "'"$file"'"}' --files='{"oas.json":"'"$file"'"}' $assetIdentifier
+                sleep 1
+                anypoint-cli-v4 exchange:asset:upload --host $host --username $username --password $password --organization $organization --name "$beautiful_name" --description "$full_detail" --tags "$tag" --type "rest-api"   --properties='{"apiVersion":"'"$version"'", "mainFile": "'"$file"'"}' --files='{"oas.json":"'"$file"'"}' $assetIdentifier
 
 
                 echo "$(pwd)"
@@ -80,7 +85,7 @@ do
                         echo "Creating a page for the sample in Anypoint Exchange"
                         echo "Sample name $sample_name  Filename $sample"  
                         
-
+                        sleep 1
                         anypoint-cli-v4 exchange:asset:page:upload --host $host --username $username --password $password --organization $organization $assetIdentifier "JSON Example $sample_name" $sample
 
                     done
@@ -124,10 +129,11 @@ do
 
                         # Create a page for the resource in Anypoint Exchange
                         echo "Creating a page for the resource in Anypoint Exchange"
+                        sleep 1
                         anypoint-cli-v4 exchange:asset:page:upload --host $host --username $username --password $password --organization $organization $assetIdentifier "Diagram $readable_diagram" $temp_file
 
                         # Delete the temporary file
-                        #rm "$temp_file"
+                        rm "$temp_file"
                     done
                     cd ../../swaggers
                 fi
